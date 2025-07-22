@@ -6,7 +6,6 @@ services:
     container_name: reisestotte-db
     restart: unless-stopped
     environment:
-      # Leser verdier fra .env-filen i rotmappen
       MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MARIADB_DATABASE: ${DB_NAME}
       MARIADB_USER: ${DB_USER}
@@ -25,11 +24,14 @@ services:
     ports:
       - "8080:8080"
     environment:
-      # Bruker variablene fra .env til å koble til databasen
       SPRING_DATASOURCE_URL: jdbc:mariadb://db:3306/${DB_NAME}
       SPRING_DATASOURCE_USERNAME: ${DB_USER}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    
+    # Løser potensielle nettverksproblemer ved å spesifisere en pålitelig DNS-server.
+    dns:
+      - 8.8.8.8
 
   frontend:
     build: ./frontend

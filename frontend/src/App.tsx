@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { IconCalculator } from '@tabler/icons-react';
 import type { LatLng, LatLngExpression } from 'leaflet';
@@ -15,14 +15,20 @@ function App() {
   const [route, setRoute] = useState<LatLngExpression[]>([]);
   const [distance, setDistance] = useState<number | null>(null);
   const [isSettingStart, setIsSettingStart] = useState(true);
+  const [mapKey, setMapKey] = useState(Date.now());
 
   const handleCalculationSuccess = () => {
     setHistoryKey(prevKey => prevKey + 1);
+    resetMapAndForm();
+  };
+
+  const resetMapAndForm = () => {
     setStartPos(null);
     setEndPos(null);
     setRoute([]);
     setDistance(null);
     setIsSettingStart(true);
+    setMapKey(Date.now()); // Tvinger re-rendering av kartet
   };
 
   const handleMapClick = (latlng: LatLng) => {
@@ -37,6 +43,20 @@ function App() {
       setEndPos(newPos);
       setIsSettingStart(true);
     }
+  };
+
+  const handleMarkerDoubleClick = (type: 'start' | 'end') => {
+    if (type === 'start') {
+      setStartPos(null);
+      if (endPos === null) {
+        setIsSettingStart(true);
+      }
+    } else {
+      setEndPos(null);
+      setIsSettingStart(false);
+    }
+    setRoute([]);
+    setDistance(null);
   };
 
   const fetchAddressFromCoords = async (coords: LatLngExpression): Promise<string> => {
@@ -83,26 +103,30 @@ function App() {
         <p className={styles.introText}>
           {isSettingStart 
             ? 'Klikk på kartet for å velge startpunkt, eller søk nedenfor.'
-            : 'Klikk på kartet for å velge destinasjon.'
+            : 'Klikk på kartet for å velge destinasjon. Dobbelklikk en markør for å fjerne den.'
           }
         </p>
 
         <TravelMap 
+          key={mapKey}
           startPos={startPos} 
           endPos={endPos} 
           route={route} 
           onMapClick={handleMapClick}
+          onMarkerDoubleClick={handleMarkerDoubleClick}
+          distance={distance}
         />
 
         <TravelForm
-         onCalculationSuccess={handleCalculationSuccess}
-         setStartPos={setStartPos}
-         setEndPos={setEndPos}
-         distance={distance}
-         startPos={startPos}
-         endPos={endPos}
-         fetchAddressFromCoords={fetchAddressFromCoords}
-         />
+          onCalculationSuccess={handleCalculationSuccess}
+          setStartPos={setStartPos}
+          setEndPos={setEndPos}
+          distance={distance}
+          startPos={startPos}
+          endPos={endPos}
+          fetchAddressFromCoords={fetchAddressFromCoords}
+        />
+        
         <HistoryList key={historyKey} />
       </main>
     </div>

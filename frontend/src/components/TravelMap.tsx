@@ -1,7 +1,7 @@
-import React from 'react';
 import { MapContainer, TileLayer, Marker, Polyline } from 'react-leaflet';
 import type { LatLng, LatLngExpression, LatLngBoundsExpression } from 'leaflet';
 import MapClickHandler from './MapClickHandler';
+import RouteInfoControl from './RouteInfoControl';
 import styles from './TravelMap.module.css';
 
 interface TravelMapProps {
@@ -9,9 +9,18 @@ interface TravelMapProps {
   endPos: LatLngExpression | null;
   route: LatLngExpression[];
   onMapClick: (latlng: LatLng) => void;
+  onMarkerDoubleClick: (type: 'start' | 'end') => void;
+  distance: number | null;
 }
 
-const TravelMap: React.FC<TravelMapProps> = ({ startPos, endPos, route, onMapClick }) => {
+const TravelMap: React.FC<TravelMapProps> = ({ 
+  startPos, 
+  endPos, 
+  route, 
+  onMapClick, 
+  onMarkerDoubleClick, 
+  distance 
+}) => {
   const defaultCenter: LatLngExpression = [64.0, 15.0];
   const maxBounds: LatLngBoundsExpression = [
     [45, -15],
@@ -35,9 +44,20 @@ const TravelMap: React.FC<TravelMapProps> = ({ startPos, endPos, route, onMapCli
         />
         
         <MapClickHandler onMapClick={onMapClick} />
+        <RouteInfoControl distance={distance} />
 
-        {startPos && <Marker position={startPos} />}
-        {endPos && <Marker position={endPos} />}
+        {startPos && (
+          <Marker 
+            position={startPos} 
+            eventHandlers={{ dblclick: () => onMarkerDoubleClick('start') }}
+          />
+        )}
+        {endPos && (
+          <Marker 
+            position={endPos} 
+            eventHandlers={{ dblclick: () => onMarkerDoubleClick('end') }}
+          />
+        )}
 
         {route.length > 0 && <Polyline positions={route} color="var(--primary-blue)" weight={5} />}
       </MapContainer>

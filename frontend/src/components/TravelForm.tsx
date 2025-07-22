@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './TravelForm.module.css';
 import { IconArrowRight } from '@tabler/icons-react';
@@ -42,6 +42,35 @@ const TravelForm: React.FC<TravelFormProps> = ({
   const [activeSearch, setActiveSearch] = useState<'start' | 'end' | null>(null);
 
   useEffect(() => {
+    const performSearch = async (query: string) => {
+      if (query.length < 3) {
+        setSearchResults([]);
+        return;
+      }
+      try {
+        const response = await axios.get<SearchResult[]>('/api/v1/search-address', {
+          params: { q: query }
+        });
+        setSearchResults(response.data);
+      } catch (err) {
+        console.error("Feil ved adressesøk:", err);
+      }
+    };
+
+    const searchAddress = activeSearch === 'start' ? formData.startAddress : formData.destinationAddress;
+    
+    const handler = setTimeout(() => {
+      if (activeSearch && searchAddress) {
+        performSearch(searchAddress);
+      }
+    }, 300);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [formData.startAddress, formData.destinationAddress, activeSearch]);
+
+  useEffect(() => {
     setDistanceInput(distance !== null ? distance.toFixed(1) : '');
   }, [distance]);
 
@@ -50,8 +79,8 @@ const TravelForm: React.FC<TravelFormProps> = ({
       fetchAddressFromCoords(startPos).then(address => {
         setFormData(prev => ({ ...prev, startAddress: address }));
       });
-    } else {
-        setFormData(prev => ({ ...prev, startAddress: '' }));
+    } else if (!endPos) {
+      setFormData(prev => ({ ...prev, startAddress: '' }));
     }
   }, [startPos, fetchAddressFromCoords]);
 
@@ -60,25 +89,10 @@ const TravelForm: React.FC<TravelFormProps> = ({
       fetchAddressFromCoords(endPos).then(address => {
         setFormData(prev => ({ ...prev, destinationAddress: address }));
       });
-    } else {
-        setFormData(prev => ({ ...prev, destinationAddress: '' }));
+    } else if (!startPos) {
+      setFormData(prev => ({ ...prev, destinationAddress: '' }));
     }
   }, [endPos, fetchAddressFromCoords]);
-
-  const handleAddressSearch = async (address: string) => {
-    if (address.length < 3) {
-      setSearchResults([]);
-      return;
-    }
-    try {
-      const response = await axios.get<SearchResult[]>(`https://nominatim.openstreetmap.org/search`, {
-        params: { q: address, format: 'json', countrycodes: 'no', limit: 5 }
-      });
-      setSearchResults(response.data);
-    } catch (err) {
-      console.error("Feil ved adressesøk:", err);
-    }
-  };
 
   const selectAddress = (result: SearchResult) => {
     const position: LatLngExpression = [parseFloat(result.lat), parseFloat(result.lon)];
@@ -95,25 +109,15 @@ const TravelForm: React.FC<TravelFormProps> = ({
     e.preventDefault();
     setIsLoading(true);
     setError(null);
-
     try {
       const finalDistance = parseFloat(distanceInput);
       if (isNaN(finalDistance) || finalDistance <= 0) {
         throw new Error("Avstand må være et gyldig, positivt tall.");
       }
-      
-      const requestData = {
-        startAddress: formData.startAddress,
-        destinationAddress: formData.destinationAddress,
-        transportMode: formData.transportMode,
-        distanceKm: finalDistance,
-      };
-
+      const requestData = { ...formData, distanceKm: finalDistance };
       await axios.post('/api/v1/calculate-support', requestData);
-
       onCalculationSuccess();
       setFormData({ startAddress: '', destinationAddress: '', transportMode: 'Egen bil' });
-      setDistanceInput('');
     } catch (err) {
       const errorMessage = (err as any).response?.data?.message || (err as Error).message || "En ukjent feil oppstod.";
       setError(errorMessage);
@@ -123,19 +127,15 @@ const TravelForm: React.FC<TravelFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className={styles.form}>
-       {/* Resten av JSX-koden er den samme... */}
-       <div className={styles.addressWrapper}>
+    <form onSubmit={handleSubmit} className={styles.form} onBlur={() => setTimeout(() => { if (searchResults.length > 0) setSearchResults([]); }, 200)}>
+      <div className={styles.addressWrapper}>
         <div className={styles.inputGroup}>
           <label htmlFor="startAddress">Fra</label>
           <input
             type="text"
             id="startAddress"
             value={formData.startAddress}
-            onChange={(e) => {
-              setFormData(prev => ({...prev, startAddress: e.target.value}));
-              handleAddressSearch(e.target.value);
-            }}
+            onChange={(e) => setFormData(prev => ({ ...prev, startAddress: e.target.value }))}
             onFocus={() => setActiveSearch('start')}
             placeholder="Søk eller klikk på kartet..."
             autoComplete="off"
@@ -149,10 +149,7 @@ const TravelForm: React.FC<TravelFormProps> = ({
             type="text"
             id="destinationAddress"
             value={formData.destinationAddress}
-            onChange={(e) => {
-              setFormData(prev => ({...prev, destinationAddress: e.target.value}));
-              handleAddressSearch(e.target.value);
-            }}
+            onChange={(e) => setFormData(prev => ({ ...prev, destinationAddress: e.target.value }))}
             onFocus={() => setActiveSearch('end')}
             placeholder="Søk eller klikk på kartet..."
             autoComplete="off"
