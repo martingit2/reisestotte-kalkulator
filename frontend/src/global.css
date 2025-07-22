@@ -1,0 +1,21 @@
+/* Fil: frontend/src/global.css */
+:root {
+  --primary-blue: rgb(59, 130, 246);
+  --light-gray-bg: rgb(248, 249, 250);
+  --dark-text: rgb(33, 37, 41);
+  --border-color: rgb(222, 226, 230);
+  --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--light-gray-bg);
+  color: var(--dark-text);
+  line-height: 1.6;
+}
