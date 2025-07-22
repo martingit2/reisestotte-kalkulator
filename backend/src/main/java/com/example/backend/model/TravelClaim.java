@@ -6,13 +6,13 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Data // Lombok-magi: Lager gettere, settere, toString, etc. automatisk
-@Entity // Forteller Spring at dette er en tabell-modell (en "entitet")
-@Table(name = "travel_claims") // Spesifiserer tabellnavnet i databasen
+@Data 
+@Entity 
+@Table(name = "travel_claims") 
 public class TravelClaim {
 
-    @Id // Dette er primærnøkkelen
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Lar databasen sette ID-en automatisk
+    @Id 
+    @GeneratedValue(strategy = GenerationType.IDENTITY) 
     private Long id;
 
     private String startAddress;
@@ -21,7 +21,7 @@ public class TravelClaim {
     private String transportMode;
     private BigDecimal calculatedSupport;
 
-    @Column(updatable = false) // Sørger for at dette feltet ikke kan endres etter det er satt
+    @Column(updatable = false) 
     private LocalDateTime createdAt;
 
     @PrePersist // Kjører denne metoden rett før objektet lagres for første gang

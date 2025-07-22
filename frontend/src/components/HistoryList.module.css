@@ -1,7 +1,4 @@
 /* Fil: frontend/src/components/HistoryList.module.css */
-.historyContainer {
-  /* Tom for nå, styling håndteres av App.module.css og nedenfor */
-}
 
 .title {
   font-size: 1.5rem;

@@ -101,7 +101,7 @@ Hele prosjektet er designet for å kunne kjøres med én enkelt kommando.
 
 1.  **Klone repoet:**
     ```bash
-    git clone https://github.com/ditt-brukernavn/ditt-repo-navn.git
+    git clone https://github.com/martingit2/reisestotte-kalkulator.git
     ```
 
 2.  **Naviger til prosjektmappen:**
