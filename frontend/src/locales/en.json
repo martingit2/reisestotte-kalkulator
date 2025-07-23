@@ -1,0 +1,21 @@
+{
+  "mainTitle": "Travel Support Calculator",
+  "introText": "Select transport mode and click the map to choose a starting point.",
+  "introTextClickAgain": "Click the map to choose a destination. Double-click a marker to remove it.",
+  "transport": "Transport",
+  "from": "From",
+  "to": "To",
+  "distance": "Distance (km)",
+  "age": "Age",
+  "searchPlaceholder": "Search or click on the map...",
+  "distancePlaceholder": "Calculated automatically",
+  "agePlaceholder": "e.g. 35",
+  "hasFrikort": "I have an exemption card",
+  "calculateButton": "Calculate support",
+  "calculatingButton": "Calculating...",
+  "historyTitle": "Last 5 calculations",
+  "historyLoading": "Loading history...",
+  "historyError": "Could not load history.",
+  "historyEmpty": "No calculations have been made yet.",
+  "mapDistance": "Distance"
+}

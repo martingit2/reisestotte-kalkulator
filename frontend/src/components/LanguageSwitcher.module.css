@@ -1,0 +1,28 @@
+.switcherContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.switcherContainer button {
+  background: none;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  color: var(--primary-blue);
+  font-weight: 500;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.switcherContainer button:hover {
+  opacity: 1;
+}
+
+.switcherContainer button.active {
+  opacity: 1;
+  font-weight: 700;
+  text-decoration: underline;
+  color: var(--dark-text);
+}

@@ -1,0 +1,21 @@
+{
+  "mainTitle": "Reisestøtte-kalkulator",
+  "introText": "Velg transportmiddel og klikk på kartet for å velge startpunkt.",
+  "introTextClickAgain": "Klikk på kartet for å velge destinasjon. Dobbelklikk en markør for å fjerne den.",
+  "transport": "Transport",
+  "from": "Fra",
+  "to": "Til",
+  "distance": "Avstand (km)",
+  "age": "Alder",
+  "searchPlaceholder": "Søk eller klikk på kartet...",
+  "distancePlaceholder": "Beregnes automatisk",
+  "agePlaceholder": "f.eks. 35",
+  "hasFrikort": "Jeg har frikort",
+  "calculateButton": "Beregn støtte",
+  "calculatingButton": "Beregner...",
+  "historyTitle": "Siste 5 beregninger",
+  "historyLoading": "Laster historikk...",
+  "historyError": "Kunne ikke laste historikk.",
+  "historyEmpty": "Ingen beregninger er gjort ennå.",
+  "mapDistance": "Avstand"
+}

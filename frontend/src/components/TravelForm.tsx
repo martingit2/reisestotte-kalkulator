@@ -20,6 +20,7 @@ interface TravelFormProps {
   startPos: LatLngExpression | null;
   endPos: LatLngExpression | null;
   fetchAddressFromCoords: (coords: LatLngExpression) => Promise<string>;
+  transportMode: string;
 }
 
 const TravelForm: React.FC<TravelFormProps> = ({
@@ -29,13 +30,15 @@ const TravelForm: React.FC<TravelFormProps> = ({
   distance,
   startPos,
   endPos,
-  fetchAddressFromCoords
+  fetchAddressFromCoords,
+  transportMode
 }) => {
   const [formData, setFormData] = useState({
     startAddress: '',
-    destinationAddress: '',
-    transportMode: 'Egen bil'
+    destinationAddress: ''
   });
+  const [age, setAge] = useState('');
+  const [hasFrikort, setHasFrikort] = useState(false);
   const [distanceInput, setDistanceInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -44,7 +47,7 @@ const TravelForm: React.FC<TravelFormProps> = ({
 
   const debouncedStartSearch = useDebounce(formData.startAddress, 300);
   const debouncedEndSearch = useDebounce(formData.destinationAddress, 300);
-  
+
   const performSearch = async (query: string) => {
     try {
       const response = await axios.get<SearchResult[]>('/api/v1/search-address', {
@@ -114,13 +117,26 @@ const TravelForm: React.FC<TravelFormProps> = ({
     setError(null);
     try {
       const finalDistance = parseFloat(distanceInput);
+      const finalAge = parseInt(age);
       if (isNaN(finalDistance) || finalDistance <= 0) {
         throw new Error("Avstand må være et gyldig, positivt tall.");
       }
-      const requestData = { ...formData, distanceKm: finalDistance };
+      if (isNaN(finalAge) || finalAge < 0) {
+        throw new Error("Alder må være et gyldig tall.");
+      }
+      const requestData = { 
+        startAddress: formData.startAddress,
+        destinationAddress: formData.destinationAddress, 
+        transportMode: transportMode, 
+        distanceKm: finalDistance,
+        age: finalAge,
+        hasFrikort: hasFrikort
+      };
       await axios.post('/api/v1/calculate-support', requestData);
       onCalculationSuccess();
-      setFormData({ startAddress: '', destinationAddress: '', transportMode: 'Egen bil' });
+      setFormData({ startAddress: '', destinationAddress: '' });
+      setAge('');
+      setHasFrikort(false);
     } catch (err) {
       const errorMessage = (err as any).response?.data?.message || (err as Error).message || "En ukjent feil oppstod.";
       setError(errorMessage);
@@ -196,18 +212,28 @@ const TravelForm: React.FC<TravelFormProps> = ({
           />
         </div>
         <div className={styles.inputGroup}>
-          <label htmlFor="transportMode">Transport</label>
-          <select 
-            id="transportMode" 
-            name="transportMode" 
-            value={formData.transportMode} 
-            onChange={(e) => setFormData(prev => ({ ...prev, transportMode: e.target.value }))}
-          >
-            <option>Egen bil</option>
-            <option>Kollektivtransport</option>
-            <option>Annet</option>
-          </select>
+          <label htmlFor="age">Alder</label>
+          <input
+            type="number"
+            id="age"
+            name="age"
+            value={age}
+            onChange={(e) => setAge(e.target.value)}
+            placeholder="f.eks. 35"
+            required
+          />
         </div>
+      </div>
+
+      <div className={styles.checkboxGroup}>
+        <input 
+          type="checkbox"
+          id="hasFrikort"
+          name="hasFrikort"
+          checked={hasFrikort}
+          onChange={(e) => setHasFrikort(e.target.checked)}
+        />
+        <label htmlFor="hasFrikort">Jeg har frikort</label>
       </div>
 
       <button type="submit" className={styles.submitButton} disabled={isLoading}>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { IconCalculator } from '@tabler/icons-react';
 import type { LatLng, LatLngExpression } from 'leaflet';
@@ -7,8 +8,11 @@ import styles from './App.module.css';
 import TravelForm from './components/TravelForm';
 import HistoryList from './components/HistoryList';
 import TravelMap from './components/TravelMap';
+import TransportSelector from './components/TransportSelector';
+import LanguageSwitcher from './components/LanguageSwitcher';
 
 function App() {
+  const { t } = useTranslation();
   const [historyKey, setHistoryKey] = useState(0);
   const [startPos, setStartPos] = useState<LatLngExpression | null>(null);
   const [endPos, setEndPos] = useState<LatLngExpression | null>(null);
@@ -16,6 +20,7 @@ function App() {
   const [distance, setDistance] = useState<number | null>(null);
   const [isSettingStart, setIsSettingStart] = useState(true);
   const [mapKey, setMapKey] = useState(Date.now());
+  const [transportMode, setTransportMode] = useState('Egen bil');
 
   const handleCalculationSuccess = () => {
     setHistoryKey(prevKey => prevKey + 1);
@@ -28,7 +33,7 @@ function App() {
     setRoute([]);
     setDistance(null);
     setIsSettingStart(true);
-    setMapKey(Date.now()); // Tvinger re-rendering av kartet
+    setMapKey(Date.now());
   };
 
   const handleMapClick = (latlng: LatLng) => {
@@ -93,19 +98,27 @@ function App() {
   }, [startPos, endPos]);
 
   return (
-    <div className={styles.pageWrapper}>
+    <div className={styles.pageContainer}>
+      <div className={styles.languageSwitcherGlobal}>
+        <LanguageSwitcher />
+      </div>
+
       <main className={styles.mainContainer}>
         <header className={styles.header}>
           <IconCalculator size={32} stroke={1.5} />
-          <h1>Reisestøtte-kalkulator</h1>
+          <h1>{t('mainTitle')}</h1>
         </header>
         
         <p className={styles.introText}>
-          {isSettingStart 
-            ? 'Klikk på kartet for å velge startpunkt, eller søk nedenfor.'
-            : 'Klikk på kartet for å velge destinasjon. Dobbelklikk en markør for å fjerne den.'
-          }
+          {isSettingStart ? t('introText') : t('introTextClickAgain')}
         </p>
+
+        <div className={styles.transportSelectorWrapper}>
+          <TransportSelector
+            selectedValue={transportMode}
+            onSelect={setTransportMode}
+          />
+        </div>
 
         <TravelMap 
           key={mapKey}
@@ -125,6 +138,7 @@ function App() {
           startPos={startPos}
           endPos={endPos}
           fetchAddressFromCoords={fetchAddressFromCoords}
+          transportMode={transportMode}
         />
         
         <HistoryList key={historyKey} />

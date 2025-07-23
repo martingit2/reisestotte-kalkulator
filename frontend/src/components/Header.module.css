@@ -1,0 +1,39 @@
+.appHeader {
+  position: fixed; /* Låser headeren til toppen av skjermen */
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px); /* "Frostet glass"-effekt */
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--dark-text);
+}
+
+.logoContainer span {
+  /* Skjul på små skjermer for en renere look */
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .logoContainer span {
+    display: inline;
+  }
+}
+
+.navLinks {
+  /* Tom for nå, men strukturen er klar */
+}
