@@ -3,6 +3,7 @@ import axios from 'axios';
 import styles from './TravelForm.module.css';
 import { IconArrowRight } from '@tabler/icons-react';
 import type { LatLngExpression } from 'leaflet';
+import { useDebounce } from '../hooks/useDebounce';
 
 interface SearchResult {
   place_id: number;
@@ -41,34 +42,36 @@ const TravelForm: React.FC<TravelFormProps> = ({
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [activeSearch, setActiveSearch] = useState<'start' | 'end' | null>(null);
 
+  const debouncedStartSearch = useDebounce(formData.startAddress, 300);
+  const debouncedEndSearch = useDebounce(formData.destinationAddress, 300);
+  
+  const performSearch = async (query: string) => {
+    try {
+      const response = await axios.get<SearchResult[]>('/api/v1/search-address', {
+        params: { q: query }
+      });
+      setSearchResults(response.data);
+    } catch (err) {
+      console.error("Feil ved adressesøk:", err);
+      setSearchResults([]);
+    }
+  };
+
   useEffect(() => {
-    const performSearch = async (query: string) => {
-      if (query.length < 3) {
-        setSearchResults([]);
-        return;
-      }
-      try {
-        const response = await axios.get<SearchResult[]>('/api/v1/search-address', {
-          params: { q: query }
-        });
-        setSearchResults(response.data);
-      } catch (err) {
-        console.error("Feil ved adressesøk:", err);
-      }
-    };
+    if (activeSearch === 'start' && debouncedStartSearch.length >= 3) {
+      performSearch(debouncedStartSearch);
+    } else if (activeSearch !== 'end') {
+      setSearchResults([]);
+    }
+  }, [debouncedStartSearch, activeSearch]);
 
-    const searchAddress = activeSearch === 'start' ? formData.startAddress : formData.destinationAddress;
-    
-    const handler = setTimeout(() => {
-      if (activeSearch && searchAddress) {
-        performSearch(searchAddress);
-      }
-    }, 300);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [formData.startAddress, formData.destinationAddress, activeSearch]);
+  useEffect(() => {
+    if (activeSearch === 'end' && debouncedEndSearch.length >= 3) {
+      performSearch(debouncedEndSearch);
+    } else if (activeSearch !== 'start') {
+      setSearchResults([]);
+    }
+  }, [debouncedEndSearch, activeSearch]);
 
   useEffect(() => {
     setDistanceInput(distance !== null ? distance.toFixed(1) : '');
@@ -127,10 +130,10 @@ const TravelForm: React.FC<TravelFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className={styles.form} onBlur={() => setTimeout(() => { if (searchResults.length > 0) setSearchResults([]); }, 200)}>
-      <div className={styles.addressWrapper}>
-        <div className={styles.inputGroup}>
-          <label htmlFor="startAddress">Fra</label>
+    <form onSubmit={handleSubmit} className={styles.form} onBlur={() => setTimeout(() => setActiveSearch(null), 200)}>
+      <div className={styles.inputGroup}>
+        <label htmlFor="startAddress">Fra</label>
+        <div className={styles.searchInputWrapper}>
           <input
             type="text"
             id="startAddress"
@@ -141,10 +144,21 @@ const TravelForm: React.FC<TravelFormProps> = ({
             autoComplete="off"
             required
           />
+          {searchResults.length > 0 && activeSearch === 'start' && (
+            <ul className={styles.searchResults}>
+              {searchResults.map(result => (
+                <li key={result.place_id} onMouseDown={() => selectAddress(result)}>
+                  {result.display_name}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
-        
-        <div className={styles.inputGroup}>
-          <label htmlFor="destinationAddress">Til</label>
+      </div>
+      
+      <div className={styles.inputGroup}>
+        <label htmlFor="destinationAddress">Til</label>
+        <div className={styles.searchInputWrapper}>
           <input
             type="text"
             id="destinationAddress"
@@ -155,17 +169,16 @@ const TravelForm: React.FC<TravelFormProps> = ({
             autoComplete="off"
             required
           />
+          {searchResults.length > 0 && activeSearch === 'end' && (
+            <ul className={styles.searchResults}>
+              {searchResults.map(result => (
+                <li key={result.place_id} onMouseDown={() => selectAddress(result)}>
+                  {result.display_name}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
-
-        {searchResults.length > 0 && activeSearch && (
-          <ul className={styles.searchResults}>
-            {searchResults.map(result => (
-              <li key={result.place_id} onMouseDown={() => selectAddress(result)}>
-                {result.display_name}
-              </li>
-            ))}
-          </ul>
-        )}
       </div>
 
       <div className={styles.row}>
