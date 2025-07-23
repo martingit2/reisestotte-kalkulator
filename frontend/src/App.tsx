@@ -1,15 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
-import { IconCalculator } from '@tabler/icons-react';
 import type { LatLng, LatLngExpression } from 'leaflet';
 import './global.css';
 import styles from './App.module.css';
+import Header from './components/Header';
 import TravelForm from './components/TravelForm';
 import HistoryList from './components/HistoryList';
 import TravelMap from './components/TravelMap';
 import TransportSelector from './components/TransportSelector';
-import LanguageSwitcher from './components/LanguageSwitcher';
 
 function App() {
   const { t } = useTranslation();
@@ -99,26 +98,20 @@ function App() {
 
   return (
     <div className={styles.pageContainer}>
-      <div className={styles.languageSwitcherGlobal}>
-        <LanguageSwitcher />
-      </div>
+      <Header />
 
       <main className={styles.mainContainer}>
-        <header className={styles.header}>
-          <IconCalculator size={32} stroke={1.5} />
+        <div className={styles.contentHeader}>
           <h1>{t('mainTitle')}</h1>
-        </header>
-        
-        <p className={styles.introText}>
-          {isSettingStart ? t('introText') : t('introTextClickAgain')}
-        </p>
-
-        <div className={styles.transportSelectorWrapper}>
-          <TransportSelector
-            selectedValue={transportMode}
-            onSelect={setTransportMode}
-          />
+          <p className={styles.introText}>
+            {isSettingStart ? t('introText') : t('introTextClickAgain')}
+          </p>
         </div>
+
+        <TransportSelector
+          selectedValue={transportMode}
+          onSelect={setTransportMode}
+        />
 
         <TravelMap 
           key={mapKey}
