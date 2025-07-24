@@ -1,90 +1,94 @@
 # Reisestøtte-kalkulator
+[![Java CI with Maven](https://github.com/martingit2/reisestotte-kalkulator/actions/workflows/build.yml/badge.svg)](https://github.com/martingit2/reisestotte-kalkulator/actions)
 
-Et fullstack "Proof-of-Concept"-prosjekt bygget med Java (Spring Boot), React og Docker.
+Et fullstack "Proof-of-Concept"-prosjekt bygget med Java (Spring Boot), React og Docker, med fokus på en profesjonell brukeropplevelse og skalerbar arkitektur.
 
-Velkommen til **Reisestøtte-kalkulator**. Dette er et selvstendig læringsprosjekt designet for å demonstrere tekniske ferdigheter i en moderne, konteinerisert fullstack-arkitektur. Hele systemet – frontend, backend og database – kjører lokalt og kan startes med én enkelt kommando takket være Docker Compose.
+Velkommen til **Reisestøtte-kalkulator**. Dette er et selvstendig læringsprosjekt designet for å demonstrere avansert teknisk kompetanse i en moderne, konteinerisert fullstack-arkitektur. Applikasjonen er ikke bare funksjonell, men også designet for å være intuitiv og brukervennlig, med interaktive elementer som live-kart og adressesøk.
 
 ---
 
 ## Innholdsfortegnelse
 
 - [Om Prosjektet](#om-prosjektet)
-    - [Formål og Kontekst](#formål-og-kontekst)
-    - [Forretningslogikk](#forretningslogikk)
-    - [Kjernefunksjonalitet](#kjernefunksjonalitet)
+  - [Formål og Kontekst](#formål-og-kontekst)
+  - [Forretningslogikk](#forretningslogikk)
+  - [Kjernefunksjonalitet](#kjernefunksjonalitet)
 - [Teknologistack](#teknologistack)
 - [Visuell Oversikt](#visuell-oversikt)
 - [Arkitektur og Dataflyt](#arkitektur-og-dataflyt)
 - [Komme i Gang](#komme-i-gang)
-    - [Forutsetninger](#forutsetninger)
-    - [Installasjon og Kjøring](#installasjon-og-kjøring)
+  - [Forutsetninger](#forutsetninger)
+  - [Installasjon og Kjøring](#installasjon-og-kjøring)
 - [Lisens](#lisens)
 
 ---
 
 ## Om Prosjektet
 
-Dette prosjektet simulerer en enkel kalkulator for beregning av økonomisk støtte til reiser, basert på avstand og et forenklet regelsett.
+Dette prosjektet er en interaktiv kalkulator for å estimere økonomisk støtte til reiser, basert på et forenklet, men realistisk, regelsett.
 
 ### Formål og Kontekst
 
 Dette er et aktivt læringsprosjekt med følgende hovedmål:
 
-*   **Mestre en fullstack-arbeidsflyt:** Bygge og koble sammen en moderne frontend og en pålitelig backend.
-*   **Anvende en spesifikk teknologistack:** Implementere et system ved hjelp av Java 21, Spring Boot 3, React og MariaDB.
-*   **Lære konteinerisering:** Bruke **Docker** og **Docker Compose** til å definere, bygge og kjøre et komplett, isolert utviklingsmiljø. Dette sikrer at prosjektet fungerer likt på alle maskiner.
-*   **Sette opp CI/CD:** Implementere en enkel pipeline med **GitHub Actions** for automatisk testing av backend-koden ved hver `push`.
+*   **Mestre en fullstack-arbeidsflyt:** Bygge og koble sammen en moderne frontend og en pålitelig backend til en sømløs applikasjon.
+*   **Anvende en spesifikk teknologistack:** Implementere et system ved hjelp av Java 21, Spring Boot 3, React (med TypeScript) og MariaDB.
+*   **Bygge en profesjonell brukeropplevelse (UX/UI):** Designe et grensesnitt som er rent, intuitivt og tilgjengelig, med funksjoner som internasjonalisering (i18n) og interaktive kart.
+*   **Implementere robust DevOps-praksis:** Bruke **Docker** for konteinerisering, **Docker Compose** for orkestrering, og **GitHub Actions** for en automatisert CI/CD-pipeline med integrasjonstester.
 
 ### Forretningslogikk
 
-Beregningen av støtte er basert på et **forenklet og fiktivt regelsett** kun for demonstrasjonsformål. Reglene som er implementert er:
+Beregningen er basert på et forenklet regelsett inspirert av offisielle satser (per 2024), kun for demonstrasjonsformål:
 
-*   **Standardsats:** 3,00 kr per kilometer for reise med egen bil.
-*   **Egenandel:** En fast egenandel på 171,00 kr per reise.
-*   **Minimumsavstand:** Reisen må være på minimum 10 km for å kvalifisere for støtte.
-*   **Beregning:** `Støtte = (Avstand i km * Sats) - Egenandel`, men resultatet kan ikke være negativt.
+*   **Standardsats:** 3,00 kr per kilometer.
+*   **Egenandel:** 171,00 kr per reise.
+*   **Minimumsavstand:** Reisen må være minimum 10 km.
+*   **Egenandelsfritak:** Egenandelen trekkes **ikke** fra dersom pasienten er **under 16 år** eller har **frikort**.
 
 ### Kjernefunksjonalitet
 
-*   **Beregning av reisestøtte:** Et enkelt skjema lar brukeren legge inn reisedetaljer.
-*   **Lagring av historikk:** Hver beregning lagres i en MariaDB-database.
-*   **Visning av historikk:** Applikasjonen viser en liste over de 5 siste beregningene som er utført.
-*   **REST API:** En backend i Spring Boot som håndterer beregning og henting av data.
+*   **Interaktivt Kart:** Brukere kan klikke på et Leaflet-kart for å velge start- og sluttpunkt, og dobbelklikke for å fjerne markører.
+*   **Automatisk Ruteplanlegging:** Ved valg av to punkter tegnes kjøreruten, og avstanden beregnes automatisk via OSRM API.
+*   **Intelligent Adressesøk:** Skjemafeltene har "autocomplete" som gir adresseforslag via en backend-proxy til Nominatim API.
+*   **Dynamisk Skjema:** Inkluderer felter for alder og frikort for nøyaktig beregning, samt en moderne, visuell velger for transportmiddel.
+*   **Resultatvisning:** En elegant modal viser det beregnede støttebeløpet etter innsending.
+*   **Sanntids-historikk:** En liste som automatisk oppdateres og viser de 5 siste beregningene, hentet fra databasen.
+*   **Internasjonalisering (i18n):** Applikasjonen støtter både norsk og engelsk.
 
 ---
 
 ## Teknologistack
 
-| Kategori              | Teknologi                                               |
-| --------------------- | ------------------------------------------------------- |
-| **Backend**           | Java 21, Spring Boot 3, Spring Data JPA, Lombok         |
-| **Frontend**          | React, TypeScript, Vite, Axios                          |
-| **Database**          | MariaDB                                                 |
-| **DevOps & CI/CD**    | Docker, Docker Compose, GitHub Actions (for Maven-tester) |
+| Kategori              | Teknologi                                                              |
+| --------------------- | ---------------------------------------------------------------------- |
+| **Backend**           | Java 21, Spring Boot 3, Spring Data JPA, Lombok, Maven                 |
+| **Frontend**          | React, TypeScript, Vite, Axios, Leaflet, `react-i18next`               |
+| **Database**          | MariaDB                                                                |
+| **DevOps & CI/CD**    | Docker, Docker Compose, Nginx (proxy), GitHub Actions, Testcontainers  |
 
 ---
 
 ## Visuell Oversikt
 
-Her er et glimt av applikasjonens brukergrensesnitt.
+Applikasjonen har et rent og fokusert grensesnitt designet for enkel bruk.
 
-| Kalkulator-skjema | Historikk-liste  |
-|-------------------|------------------|
-| `[Bilde kommer]`  | `[Bilde kommer]` |
+| Interaktivt Grensesnitt & Ruteplanlegging | Detaljvisning av Rute |
+| :----------------------------------------------------------: | :----------------------------------------------------------: |
+| ![Bilde av appens forside](./docs/images/kartmedrute.png) | ![Bilde av kart med en annen rute](./docs/images/kartmedrute2.png) |
+| **Resultat (med og uten frikort)**                             | **Persistent Historikk**                     |
+| ![Bilde av resultat-modal for lang reise med frikort](./docs/images/langreisemedfrikort.png)        | ![Bilde av historikkliste](./docs/images/sisteberegninger.png) |
 
 ---
 
 ## Arkitektur og Dataflyt
 
-Applikasjonen følger en klassisk tre-lags arkitektur som kjører i separate Docker-containere.
+Applikasjonen er bygget på en moderne mikrotjeneste-inspirert arkitektur, orkestrert av Docker Compose.
 
-1.  Brukeren fyller ut skjemaet i **React-appen** (Frontend).
-2.  Ved klikk på "Beregn", sender React-appen en `POST`-request til `http://localhost:8080/api/v1/calculate-support`.
-3.  **Spring Boot-appen** (Backend) mottar forespørselen.
-4.  `CalculationService` anvender forretningslogikken for å beregne støtten.
-5.  `TravelClaimRepository` lagrer forespørselen og resultatet til **MariaDB-databasen**.
-6.  API-et returnerer det beregnede beløpet som JSON til React-appen.
-7.  React-appen mottar svaret og oppdaterer brukergrensesnittet for å vise resultatet og den oppdaterte historikklisten.
+1.  Brukeren interagerer med **React-appen**, som kjører i en Nginx-container.
+2.  API-kall (både for beregning og eksterne søk) sendes til `/api/*`. Nginx fungerer som en **reverse proxy** og videresender disse kallene til backend-containeren.
+3.  **Spring Boot-appen** mottar forespørselen. For adressesøk, kaller den eksterne API-er (Nominatim/OSRM). For beregninger, anvender den forretningslogikken.
+4.  Data lagres og hentes fra **MariaDB-databasen**.
+5.  Svaret sendes tilbake gjennom kjeden til React-appen, som oppdaterer UI-et.
 
 ---
 
@@ -95,32 +99,32 @@ Hele prosjektet er designet for å kunne kjøres med én enkelt kommando.
 ### Forutsetninger
 
 *   [Git](https://git-scm.com/)
-*   [Docker Desktop](https://www.docker.com/products/docker-desktop/) må være installert og kjøre på maskinen din.
+*   [Docker Desktop](https://www.docker.com/products/docker-desktop/) må være installert og kjøre.
 
 ### Installasjon og Kjøring
 
 1.  **Klone repoet:**
     ```bash
     git clone https://github.com/martingit2/reisestotte-kalkulator.git
+    cd reisestotte-kalkulator
     ```
 
-2.  **Naviger til prosjektmappen:**
-    ```bash
-    cd ditt-repo-navn
-    ```
+2.  **Opprett miljøfil:**
+    *   Kopier `.env.example` til en ny fil som heter `.env`.
+    *   Fyll inn dine egne hemmelige passord i `.env`-filen.
 
 3.  **Bygg og start containerne:**
     ```bash
     docker-compose up --build
     ```
-    *   `--build`-flagget er viktig første gang du kjører, da det bygger Docker-imagene fra `Dockerfile`-ene dine.
+    *   Første gang kan dette ta noen minutter, da Docker må laste ned og bygge alt.
 
 4.  **Applikasjonen er nå tilgjengelig:**
-    *   **Frontend:** Åpne nettleseren og gå til [**http://localhost:3000**](http://localhost:3000)
-    *   **Backend API:** Kan nås på `http://localhost:8080`. Du kan f.eks. sjekke historikk-endepunktet på [http://localhost:8080/api/v1/history](http://localhost:8080/api/v1/history)
+    *   **Frontend:** [**http://localhost:3000**](http://localhost:3000)
+    *   **Backend API:** [http://localhost:8080/api/v1/history](http://localhost:8080/api/v1/history)
 
 5.  **For å stoppe applikasjonen:**
-    *   Gå tilbake til terminalen der `docker-compose` kjører og trykk `CTRL + C`.
+    *   Gå til terminalen og trykk `CTRL + C`, og kjør deretter `docker-compose down`.
 
 ---
 
