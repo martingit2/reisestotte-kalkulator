@@ -1,0 +1,93 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  backdrop-filter: blur(5px);
+}
+
+.modal {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 450px;
+  text-align: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.header {
+  margin-bottom: 1.5rem;
+}
+
+.icon {
+  color: #28a745; /* Grønn for suksess */
+  margin-bottom: 1rem;
+}
+
+.header h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.content .label {
+  font-size: 1rem;
+  color: #6c757d;
+  margin-bottom: 0.5rem;
+}
+
+.content .amount {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.amount.positive {
+  color: var(--primary-blue);
+}
+
+.amount.zero {
+  color: var(--dark-text);
+}
+
+.content .info {
+  font-size: 0.9rem;
+  color: #6c757d;
+  line-height: 1.5;
+}
+
+.closeButton {
+  margin-top: 2rem;
+  padding: 0.75rem 1.5rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--light-gray-bg);
+  color: var(--dark-text);
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.closeButton:hover {
+  background-color: #e2e6ea;
+  border-color: #ced4da;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

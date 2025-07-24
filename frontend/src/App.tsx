@@ -9,6 +9,7 @@ import TravelForm from './components/TravelForm';
 import HistoryList from './components/HistoryList';
 import TravelMap from './components/TravelMap';
 import TransportSelector from './components/TransportSelector';
+import CalculationResult from './components/CalculationResult';
 
 function App() {
   const { t } = useTranslation();
@@ -20,9 +21,11 @@ function App() {
   const [isSettingStart, setIsSettingStart] = useState(true);
   const [mapKey, setMapKey] = useState(Date.now());
   const [transportMode, setTransportMode] = useState('Egen bil');
+  const [calculationResult, setCalculationResult] = useState<number | null>(null);
 
-  const handleCalculationSuccess = () => {
+  const handleCalculationSuccess = (amount: number) => {
     setHistoryKey(prevKey => prevKey + 1);
+    setCalculationResult(amount);
     resetMapAndForm();
   };
 
@@ -136,6 +139,11 @@ function App() {
         
         <HistoryList key={historyKey} />
       </main>
+
+      <CalculationResult
+        amount={calculationResult}
+        onClose={() => setCalculationResult(null)}
+      />
     </div>
   );
 }

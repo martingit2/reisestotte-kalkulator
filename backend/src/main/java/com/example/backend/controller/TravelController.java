@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -21,6 +23,8 @@ import java.util.List;
 @RequestMapping("/api/v1")
 @CrossOrigin(origins = "http://localhost:3000")
 public class TravelController {
+
+    private static final Logger log = LoggerFactory.getLogger(TravelController.class);
 
     private final CalculationService calculationService;
     private final TravelClaimRepository travelClaimRepository;
@@ -32,6 +36,7 @@ public class TravelController {
 
     @PostMapping("/calculate-support")
     public ResponseEntity<CalculationResponse> calculateSupport(@Valid @RequestBody CalculationRequest request) {
+        log.info("Mottatt forespørsel for beregning: {}", request);
         BigDecimal support = calculationService.calculateSupport(request);
         calculationService.saveCalculation(request, support);
 

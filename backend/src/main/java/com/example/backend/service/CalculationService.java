@@ -4,6 +4,7 @@ import com.example.backend.dto.CalculationRequest;
 import com.example.backend.model.TravelClaim;
 import com.example.backend.repository.TravelClaimRepository;
 import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 
 @Service
@@ -16,7 +17,6 @@ public class CalculationService {
     }
 
     public BigDecimal calculateSupport(CalculationRequest request) {
-        // Forenklet forretningslogikk for demonstrasjon
         final BigDecimal RATE_PER_KM = new BigDecimal("3.00");
         final BigDecimal DEDUCTIBLE = new BigDecimal("171.00");
         final BigDecimal MIN_DISTANCE_KM = new BigDecimal("10.0");
@@ -26,7 +26,13 @@ public class CalculationService {
         }
 
         BigDecimal totalCost = request.getDistanceKm().multiply(RATE_PER_KM);
-        BigDecimal support = totalCost.subtract(DEDUCTIBLE);
+
+        boolean applyDeductible = request.getAge() >= 16 && !request.getHasFrikort();
+
+        BigDecimal support = totalCost;
+        if (applyDeductible) {
+            support = totalCost.subtract(DEDUCTIBLE);
+        }
 
         return support.max(BigDecimal.ZERO);
     }
@@ -38,6 +44,8 @@ public class CalculationService {
         claim.setDistanceKm(request.getDistanceKm());
         claim.setTransportMode(request.getTransportMode());
         claim.setCalculatedSupport(support);
+        claim.setAge(request.getAge());
+        claim.setHasFrikort(request.getHasFrikort());
 
         return travelClaimRepository.save(claim);
     }

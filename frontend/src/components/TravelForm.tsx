@@ -13,7 +13,7 @@ interface SearchResult {
 }
 
 interface TravelFormProps {
-  onCalculationSuccess: () => void;
+  onCalculationSuccess: (amount: number) => void;
   setStartPos: (pos: LatLngExpression | null) => void;
   setEndPos: (pos: LatLngExpression | null) => void;
   distance: number | null;
@@ -132,8 +132,9 @@ const TravelForm: React.FC<TravelFormProps> = ({
         age: finalAge,
         hasFrikort: hasFrikort
       };
-      await axios.post('/api/v1/calculate-support', requestData);
-      onCalculationSuccess();
+      const response = await axios.post('/api/v1/calculate-support', requestData);
+      const calculatedAmount = response.data.calculatedSupport;
+      onCalculationSuccess(calculatedAmount);
       setFormData({ startAddress: '', destinationAddress: '' });
       setAge('');
       setHasFrikort(false);
@@ -209,6 +210,7 @@ const TravelForm: React.FC<TravelFormProps> = ({
             placeholder="Beregnes automatisk"
             required
             step="0.1"
+            min="0" 
           />
         </div>
         <div className={styles.inputGroup}>
@@ -221,6 +223,7 @@ const TravelForm: React.FC<TravelFormProps> = ({
             onChange={(e) => setAge(e.target.value)}
             placeholder="f.eks. 35"
             required
+            min="0"
           />
         </div>
       </div>
