@@ -68,15 +68,19 @@ Beregningen er basert på et forenklet regelsett inspirert av offisielle satser 
 
 ---
 
+---
+
 ## Visuell Oversikt
 
-Applikasjonen har et rent og fokusert grensesnitt designet for enkel bruk.
+Applikasjonen har et rent og fokusert grensesnitt designet for enkel bruk, fra den innbydende forsiden til den detaljerte historikkvisningen.
 
-| Interaktivt Grensesnitt & Ruteplanlegging | Detaljvisning av Rute |
+| Clean & Intuitiv Hovedside | Persistent Historikk |
 | :----------------------------------------------------------: | :----------------------------------------------------------: |
-| ![Bilde av appens forside](./docs/images/kartmedrute.png) | ![Bilde av kart med en annen rute](./docs/images/kartmedrute2.png) |
-| **Resultat (med og uten frikort)**                             | **Persistent Historikk**                     |
-| ![Bilde av resultat-modal for lang reise med frikort](./docs/images/langreisemedfrikort.png)        | ![Bilde av historikkliste](./docs/images/sisteberegninger.png) |
+| ![Bilde av appens forside](./docs/images/forside1.png) | ![Bilde av historikkliste](./docs/images/sisteberegninger.png) |
+| Interaktiv Ruteplanlegging | Detaljvisning av Rute |
+| ![Bilde av kart med rute 1](./docs/images/kartmedrute.png) | ![Bilde av kart med en annen rute](./docs/images/kartmedrute2.png) |
+| Resultat (med Frikort) | Resultat (uten Frikort) |
+| ![Bilde av resultat med frikort](./docs/images/langreisemedfrikort.png) | ![Bilde av resultat uten frikort](./docs/images/kortreiseutenfrikort.png) |
 
 ---
 
